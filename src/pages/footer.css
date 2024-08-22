@@ -1,0 +1,26 @@
+footer {
+    background-color: rgb(253, 233, 212);
+    
+   bottom: 0;
+    width: 100%;
+    margin-top: 0; 
+    margin-bottom: -10px;     
+    padding-bottom: 5px;
+    height: 100px;           
+    flex-grow: 1;
+}
+
+ .footer-container ul {
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    list-style-type: none;
+    padding: 1rem 0 3rem 0;
+    font-size: 40px;
+}
+
+.footer-container ul li {
+    position: relative;
+    margin-left: 50px;
+
+}   
