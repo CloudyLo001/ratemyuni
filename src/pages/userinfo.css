@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css?family=DM+Sans');
+
+.rating-box {
+    text-align: center;
+}
+
+.stars {
+    display: inline-block;
+}
+
+.stars i {
+    font-size: 30px;
+    color: #ccc; /* Default color for unselected stars */
+    cursor: pointer;
+}
+
+.stars i:hover,
+.stars i:hover ~ i {
+    color: #deb217; /* Color when hovering over stars */
+}
+
+.checked {
+    color: #ffc700; /* Color for selected stars */
+}

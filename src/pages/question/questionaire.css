@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css?family=DM+Sans');
+
+/* Style for the question container */
+.question-container {
+    background-color: #f9f9f9;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    max-height: 400px;
+    margin: 20px auto;
+    text-align: center;
+  }
+  
+  /* Style for the header question */
+  .question-container h1 {
+    font-size: 1.8em;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* Style for the textbox input */
+  .question-container input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    outline: none;
+    transition: all 0.3s ease;
+     /* Prevent text overflow and wrap text */
+  overflow: hidden;           /* Hide overflowing text */
+  white-space: nowrap;        /* Keep the text on one line (if you want no wrapping) */
+  text-overflow: ellipsis;    /* Show "..." for long text that overflows */
+  }
+
+  /* If you want a multi-line textbox (textarea), you can use this: */
+.question-container textarea {
+    width: 100%;
+    height: 150px; /* You can adjust the height as needed */
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    outline: none;
+    resize: vertical; /* Allow vertical resizing */
+    
+    /* Text starts at top-left */
+    vertical-align: top;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+  }
+  
+  /* Highlight input box when focused */
+  .question-container input[type="text"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  
+  /* Style for the submit button */
+  .question-container button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Change button color on hover */
+  .question-container button:hover {
+    background-color: #0056b3;
+  }
+  
+  .answer-box {
+    height: 200px;
+  }

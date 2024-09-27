@@ -1,26 +1,24 @@
+/* Ensure the footer sticks to the bottom */
 footer {
     background-color: rgb(253, 233, 212);
-    
-   bottom: 0;
     width: 100%;
-    margin-top: 0; 
-    margin-bottom: -10px;     
+    height: 100px;
+    left: 0;
     padding-bottom: 5px;
-    height: 100px;           
-    flex-grow: 1;
+    margin-top: 80px;
 }
 
- .footer-container ul {
+/* Footer container and list */
+.footer-container ul {
     width: 100%;
-    padding: 5px;
     display: flex;
+    justify-content: center; /* Center items horizontally */
     list-style-type: none;
-    padding: 1rem 0 3rem 0;
-    font-size: 40px;
+    padding: 1rem 0;
+    margin: 0;
+    font-size: 20px;
 }
 
 .footer-container ul li {
-    position: relative;
-    margin-left: 50px;
-
-}   
+    margin: 0 20px;
+}

@@ -175,7 +175,7 @@ header {
     align-items: center;
 }
 .modal-content {
-    background: white;
+    background: #f00;
     padding: 20px;
     border-radius: 5px;
     width: 100%;
