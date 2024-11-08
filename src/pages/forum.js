@@ -1,225 +1,232 @@
 import React, { useState, useEffect } from "react";
 import "./forum.css";
-import "./footer.css";
 import HomeMenu from "./homemenu";
 import Footer from "./footer";
 import { db, auth } from "../config/firebase";
-import {
-  getDocs,
-  collection,
-  addDoc,
-  deleteDoc,
-  doc,
-  getDoc,
-  updateDoc,
-} from "firebase/firestore";
-import { ref, uploadBytes } from "firebase/storage";
-import { Login } from "./login";
+import { getDocs, collection, addDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { signInWithPopup, signOut } from "firebase/auth";
-import { googleProvider } from "../config/firebase";
+import { Link } from "react-router-dom";
 
 function IndexList() {
   const [reviewList, setReviewList] = useState([]);
-  // New review States
-  const [newProgram, setNewProgram] = useState("");
-  const [newSchool, setNewSchool] = useState("");
-  const [newReview, setNewReview] = useState("");
-
-  const reviewsCollectionRef = collection(db, "Reviews");
-
+  const [userinfoList, setUserInfoList] = useState([]);
+  const [LevelOfEducationFilter, setLevelOfEducationFilter] = useState("");
+  const [visibleCount, setVisibleCount] = useState(5); // State to track visible reviews
   const navigate = useNavigate();
-  const [userEmail, setUserEmail] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Update Review States
-  /* const [updatedSchool, setUpdatedSchool] = useState("")
-    const [updatedProgram, setUpdatedProgram] = useState("")
-    const [updatedReview, setUpdatedReview] = useState("")*/
+  //Filters
+  const [topicFilter, setTopicFilter] = useState("");
+  const [programFilter, setProgramFilter] = useState("");
+  const [levelFilter, setLevelFilter] = useState("");
+  const [dateOrder, setDateOrder] = useState("desc");
 
-  //Showing user-email
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUserEmail(user.email);
-        setIsLoggedIn(true);
-      } else {
-        setUserEmail(null);
-        setIsLoggedIn(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+  // States for filter options
+  const [topicOptions, setTopicOptions] = useState([]);
+  const [programOptions, setProgramOptions] = useState([]);
+  const [levelOptions, setLevelOptions] = useState([]);
 
   useEffect(() => {
-    getReviewList();
-  }, []);
-
-  const getReviewList = async () => {
-    try {
+    // Fetch reviews and unique topics
+    const fetchReviews = async () => {
+      const reviewsCollectionRef = collection(db, "Questions and Answers");
       const data = await getDocs(reviewsCollectionRef);
-      const filteredData = data.docs.map((doc) => ({
+      const reviews = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      setReviewList(reviews);
+
+      // Extract unique topics for topic filter options
+      const topics = new Set();
+      reviews.forEach((review) => {
+        if (review.topic) topics.add(review.topic);
+      });
+      setTopicOptions([...topics]);
+    };
+
+    // Fetch user information for program and level options
+    const fetchUserInfo = async () => {
+      const userInfoCollectionRef = collection(db, "UserInfo");
+      const data = await getDocs(userInfoCollectionRef);
+      const userInfoList = data.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      setReviewList(filteredData);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+      setUserInfoList(userInfoList);
 
-  const onSubmitReview = async () => {
-    if (!newProgram || !newSchool || !newReview) {
-      alert("Please fill out all fields.");
-      return;
-    } else {
-      // Clear modal input fields
-      document.getElementById("reviewSchool").value = "";
-      document.getElementById("reviewProgram").value = "";
-      document.getElementById("reviewContent").value = "";
-
-      // Hide the modal
-      document.getElementById("reviewModal").style.display = "none";
-    }
-    try {
-      await addDoc(reviewsCollectionRef, {
-        Program: newProgram,
-        School: newSchool,
-        Review: newReview,
-        userId: auth?.currentUser?.uid,
-        userEmail: userEmail,
+      // Extract unique programs and levels for filter options
+      const programs = new Set();
+      const levels = new Set();
+      userInfoList.forEach((user) => {
+        if (user.Program) programs.add(user.Program);
+        if (user.LevelOfEducation) levels.add(user.LevelOfEducation);
       });
-      getReviewList();
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
-  const onLeaveReviewBtn = async () => {
-    if (!isLoggedIn) {
-      alert("User not logged in!");
-      return;
-    }
-    try {
-      document.getElementById("reviewModal").style.display = "flex";
+      setProgramOptions([...programs].sort());
+      setLevelOptions([...levels]);
+    };
 
-      // Close the modal when clicking outside of it
-      window.addEventListener("click", (event) => {
-        if (event.target === document.getElementById("reviewModal")) {
-          document.getElementById("reviewModal").style.display = "none";
-        }
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    fetchReviews();
+    fetchUserInfo();
+  }, []);
 
-  const deleteReview = async (id) => {
-    // Check if the user is authenticated
+  const handleLeaveReview = () => {
     if (auth.currentUser) {
-      const reviewDoc = doc(db, "Reviews", id);
-      const reviewSnapshot = await getDoc(reviewDoc);
-
-      // Check if the authenticated user is the creator of the review
-      if (reviewDoc.id === auth.currentUser.uid) {
-        // Delete the review
-        await deleteDoc(reviewDoc);
-
-        // Update local state to remove the deleted review
-        setReviewList((prevReviews) =>
-          prevReviews.filter((review) => review.id !== id)
-        );
-      } else {
-        console.log("User is not authorized to delete this review.");
-      }
+      navigate("/questions"); // Redirect to review page if logged in
+    } else {
+      navigate("/login"); // Redirect to login page if not logged in
     }
   };
-  /*const deleteReview= async (id) => {
-    const reviewDoc = doc(db, "Reviews", id);
-    await deleteDoc(reviewDoc);
-    // Update local state to remove the deleted review
-    setReviewList((prevReviews) => prevReviews.filter((review) => review.id !== id));          
-    }*/
 
-  //Edit Review
-  /*const editReview= async (id, ) => {
-    const reviewDoc = doc(db, "Reviews", id);
-    await updateDoc(reviewDoc, {School: setUpdatedSchool, Program: setUpdatedProgram, setUpdatedReview});
-    // Update local state to remove the deleted review
-    setReviewList((prevReviews) => prevReviews.filter((review) => review.id !== id)); 
-}*/
+  const filteredReviews = reviewList
+    .filter((review) => {
+      const userInfo = userinfoList.find(
+        (user) => user.userId === review.userId
+      );
+
+      if (topicFilter && review.topic !== topicFilter) return false;
+      if (programFilter && userInfo?.Program !== programFilter) return false;
+      if (levelFilter && userInfo?.LevelOfEducation !== levelFilter)
+        return false;
+
+      return true;
+    })
+    .sort((a, b) =>
+      dateOrder === "desc"
+        ? b.timestamp?.toMillis() - a.timestamp?.toMillis()
+        : a.timestamp?.toMillis() - b.timestamp?.toMillis()
+    );
+
+  // Get only the visible reviews
+  const displayedReviews = filteredReviews.slice(0, visibleCount);
+
+  const loadMoreReviews = () => {
+    setVisibleCount((prevCount) => prevCount + 3); // Load 3 more reviews
+  };
+
+  const formatReviewDate = (postedDate) => {
+    const now = new Date();
+    const posted = new Date(postedDate);
+    const diffInMillis = now - posted;
+    const diffInSeconds = Math.floor(diffInMillis / 1000);
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+    const diffInMonths = Math.floor(diffInDays / 30);
+    const diffInYears = Math.floor(diffInMonths / 12);
+
+    if (diffInSeconds < 60) {
+      return "Posted today";
+    } else if (diffInMinutes < 60) {
+      return `Posted ${diffInMinutes} minute${
+        diffInMinutes > 1 ? "s" : ""
+      } ago`;
+    } else if (diffInHours < 24) {
+      return `Posted ${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
+    } else if (diffInDays < 30) {
+      return `Posted ${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
+    } else if (diffInMonths < 12) {
+      return `Posted ${diffInMonths} month${diffInMonths > 1 ? "s" : ""} ago`;
+    } else {
+      return `Posted ${diffInYears} year${diffInYears > 1 ? "s" : ""} ago`;
+    }
+  };
 
   return (
     <div>
       <HomeMenu />
-
-      {/*<div className="search-container">
-    <input id="search" className="search-box" placeholder="Enter your University . . " name=""/>
-        <div className="suggestions" id="suggestions"></div>
-</div>*/}
-
-      <div className="forum-container">
-        <div className="forum-title">Forum</div>
-        <section className="reviews" id="reviews">
-          Review
-          <div className="modal-content">
-            {reviewList.map((Review) => (
-              <div className="review">
-                <div>Program: {Review.Program} </div>
-                <div>School: {Review.School} </div>
-                <div>Review: {Review.Review}</div>
-                <div>UserId: {Review.userId}</div>
-                <div>User: {Review.userEmail}</div>
-                <button
-                  onClick={() => deleteReview(Review.id)}
-                  className="deletebtn"
-                >
-                  X
-                </button>
-                <button
-                  /*onClick={</div>() => editReview(Review.id)}*/ className="editbtn"
-                >
-                  Edit Review
-                </button>
-              </div>
-            ))}
+      <div className="container-forum-filter">
+        <div className="forum-container">
+          <div className="forum-title-container">
+            <div className="forum-title">University of Waterloo Reviews</div>
+            <button className="leave-review-btn" onClick={handleLeaveReview}>
+              Leave a Review
+            </button>
           </div>
-        </section>
-        {
-          <button
-            onClick={onLeaveReviewBtn}
-            className="leave-review-btn"
-            id="leaveReviewBtn"
-          >
-            Leave a Review
-          </button>
-        }
-      </div>
+          <section className="reviews">
+            <div className="modal-content">
+              {displayedReviews.map((review) => {
+                const userInfo = userinfoList.find(
+                  (user) => user.userId === review.userId
+                );
 
-      <div className="modal" id="reviewModal">
-        <div className="modal-content">
-          <input
-            type="text"
-            id="reviewSchool"
-            placeholder="Your School"
-            onChange={(e) => setNewProgram(e.target.value)}
-          />
-          <input
-            type="text"
-            id="reviewProgram"
-            placeholder="Your Program"
-            onChange={(e) => setNewSchool(e.target.value)}
-          />
-          <textarea
-            id="reviewContent"
-            rows="8"
-            placeholder="Your Review"
-            onChange={(e) => setNewReview(e.target.value)}
-          ></textarea>
-          <button onClick={onSubmitReview} id="submitReviewBtn">
-            Submit
-          </button>
+                return (
+                  <Link
+                    to={`/review/${review.id}`}
+                    key={review.id}
+                    className="review-link"
+                  >
+                    <div className="review">
+                      <div className="prompt">{review.prompt}</div>
+                      <div className="answer">{review.answer}</div>
+                      {userInfo ? (
+                        <div className="user-info">
+                          - {userInfo.Program} student from Class of{" "}
+                          {userInfo.ExpectedGraduationYear}
+                        </div>
+                      ) : (
+                        <div>- student information not available</div>
+                      )}
+                      <div className="timestamp">
+                        {formatReviewDate(review.timestamp?.toDate())}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+            {visibleCount < filteredReviews.length && ( // Show button only if there are more reviews to show
+              <button className="more-reviews-btn" onClick={loadMoreReviews}>
+                More Reviews
+              </button>
+            )}
+          </section>
+        </div>
+
+        {/*Filter*/}
+        <div className="filter-container">
+          <h3>Filter</h3>
+          <label>
+            Topic:
+            <select
+              value={topicFilter}
+              onChange={(e) => setTopicFilter(e.target.value)}
+            >
+              <option value="">All Topics</option>
+              {topicOptions.map((topic) => (
+                <option key={topic} value={topic}>
+                  {topic}
+                </option>
+              ))}
+            </select>
+          </label>
+          {/* Program Filter */}
+          <label>
+            Program:
+            <select
+              value={programFilter}
+              onChange={(e) => setProgramFilter(e.target.value)}
+            >
+              <option value="">All Programs</option>
+              {programOptions.map((program) => (
+                <option key={program} value={program}>
+                  {program}
+                </option>
+              ))}
+            </select>
+          </label>
+          {/* Level of Education Filter */}
+          <label>
+            Level of Education:
+            <select
+              value={levelFilter}
+              onChange={(e) => setLevelFilter(e.target.value)}
+            >
+              <option value="">All Levels</option>
+              {levelOptions.map((level) => (
+                <option key={level} value={level}>
+                  {level}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
       </div>
       <Footer />

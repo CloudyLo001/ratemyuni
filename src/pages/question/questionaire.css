@@ -1,81 +1,225 @@
-@import url('https://fonts.googleapis.com/css?family=DM+Sans');
+.qa-form {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding-bottom: 100px;
+}
 
-/* Style for the question container */
-.question-container {
-    background-color: #f9f9f9;
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 1200px;
-    max-height: 400px;
-    margin: 20px auto;
-    text-align: center;
-  }
+/* Text Inputs and Textareas */
+.qa-form input[type="text"],
+.qa-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.qa-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.submit {
+  display: block;
+  width: 50%;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  max-width: 200px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.submit:hover {
+  background-color: #3FA15D; /* Darker blue on hover */
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Larger shadow */
+  transform: scale(1.05); /* Slightly larger on hover */
+
+}
   
-  /* Style for the header question */
-  .question-container h1 {
-    font-size: 1.8em;
-    color: #333;
-    margin-bottom: 20px;
-  }
+
+#largeTextArea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-size: 16px;
+  resize: vertical;
+}
+
+label {
+  font-size: 16px;
+  margin-right: 8px;
+  color: #333;
+}
+
+select {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+select:focus {
+  border-color: #1683a7; /* Change to your theme color */
+  outline: none;
+}
+
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.topic {
+display:flex;
+}
+
+
+/* Dropdown Content */
+.dropdown {
+  position: relative;
+}
+.dropdown-button {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+/* Dropdown List */
+.dropdown-content {
+  display: block; /* Display dropdown when triggered */
+  position: absolute;
+  background-color: white;
+  min-width: 200px;
+  border: 1px solid #ccc;
+  z-index: 1;
+  margin-top: 5px;
+}
+
+
+/* Topic and Questions Styling */
+.topic-item {
+  position: relative;
+}
+
+.topic-name {
+  padding: 10px; /* Add padding for better spacing */
+  cursor: pointer; /* Indicate it's clickable */
+}
+
+
+select option button {
+  border: none;
+  background-color: red;
+  padding: 10px;
+}
+
+/* Question Item Styling */
+.question-item {
+  padding: 8px;
+  cursor: pointer;
+  display: flex; /* Use flexbox */
+  flex-direction: column; /* Align items vertically */
+  margin-left: 230px;
   
-  /* Style for the textbox input */
-  .question-container input[type="text"] {
-    width: 100%;
+}
+
+
+.question-item:hover {
+  background-color: #dada4b; /* Highlight on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .qa-form {
     padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1em;
-    outline: none;
-    transition: all 0.3s ease;
-     /* Prevent text overflow and wrap text */
-  overflow: hidden;           /* Hide overflowing text */
-  white-space: nowrap;        /* Keep the text on one line (if you want no wrapping) */
-  text-overflow: ellipsis;    /* Show "..." for long text that overflows */
   }
 
-  /* If you want a multi-line textbox (textarea), you can use this: */
-.question-container textarea {
-    width: 100%;
-    height: 150px; /* You can adjust the height as needed */
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1em;
-    outline: none;
-    resize: vertical; /* Allow vertical resizing */
-    
-    /* Text starts at top-left */
-    vertical-align: top;
-    overflow-wrap: break-word;
-    line-height: 1.5;
+  .qa-form button[type="submit"] {
+    width: 100%; /* Make submit button full-width on small screens */
   }
+}
+
+.menu {
+  list-style-type: '';
+  padding: 0;
+  margin: 0;
+  background-color: rgb(255, 255, 255);
+  padding: 4px;
+  z-index: 10;
+  width: 220px;
   
-  /* Highlight input box when focused */
-  .question-container input[type="text"]:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-  }
+}
+
+.questions-container {
+  list-style-type: '';
+  padding: 0;
+  margin: 0;
+  background-color: rgb(255, 255, 255);
+  padding: 4px;
+  z-index: 10;
+  width: fit-content;
+  background-color: transparent;
+}
+.questions-container ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none; /* Remove default bullet points */
+  box-shadow: 4px;
+  border: 1px solid #ccc; /* Light gray border */
+}
+.questions-container li {
+  background-color: rgba(255, 255, 255, 0.9); /* Background only on list items */
+  padding: 6px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
   
-  /* Style for the submit button */
-  .question-container button {
-    background-color: #007bff;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s ease;
-  }
-  
-  /* Change button color on hover */
-  .question-container button:hover {
-    background-color: #0056b3;
-  }
-  
-  .answer-box {
-    height: 200px;
-  }
+}
+
+.questions-container li:hover {
+  background-color: #dadada; /* Light gray background on hover */
+ 
+}
+
+.topic-box {
+  border: 1px solid #ccc; /* Light gray border */
+  background-color: #f9f9f9; /* Light background color */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+         /* Optional max-width to control size */
+  width: fit-content;
+  height: fit-content;
+  z-index: 9999;
+}
+ul {
+  list-style-type: none;
+}
+
+.option-button {
+  background-color: #ffffff; /* White background */
+  color: #333; /* Dark text color */
+  padding: 10px 16px; /* Padding for comfortable size */
+  font-size: 16px;
+  border: 1px solid #ccc; /* Border to match dropdown look */
+  border-radius: 4px; /* Slightly rounded corners */
+  cursor: pointer;
+  appearance: none; /* Removes default button styling */
+  position: relative;
+  width: 240px; /* Adjust width as needed */
+  text-align: left;
+  padding-right: 24px; /* Space for the arrow */
+}

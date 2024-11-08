@@ -6,6 +6,7 @@ header {
   font-style: normal;
 }
 
+
 h1 {
   margin:0;
   padding: 0;
@@ -18,55 +19,6 @@ h1 {
 
 
 
-.logo {
-  margin:0;
-  padding: 0;
-  text-align: left;
-  font-size: 50px;
-  margin-top: 30px;
-  padding-left: 100px;
-  z-index: -1;
-  
-}
-
-.sign-up-btn {
-  position: absolute;
-  top: 0;
-  right: 300px;
-  padding: 20px 40px;
-  font-size: 20px;
-  background-color: #b199db;
-  color: black;
-  border: none;
-  border-radius: 40px;
-  cursor: pointer;
-  margin: 30px 30px 10px;
-  font-weight: bold;
-}
-
-.sign-up-btn:hover {
-  background-color: rgb(219, 131, 219);
-}
-
-.log-out-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 20px 40px;
-  font-size: 20px;
-  background-color: #b199db;
-  color: black;
-  border: none;
-  border-radius: 40px;
-  cursor: pointer;
-  margin: 30px 30px 10px;
-  font-weight: bold;
-}
-
-.log-out-btn:hover {
-  background-color: rgb(219, 131, 219);
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -75,16 +27,12 @@ h1 {
 }
 
 body {
-  background: #fff8f6;
+  background: #fdfdfd;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-::selection {
-  color: #fff;
-  background: #664aff;
-}
 
 .container {
   width: 100%;

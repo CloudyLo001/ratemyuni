@@ -1,0 +1,87 @@
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0; /* Light background for contrast */
+    color: #333; /* Dark text for readability */
+}
+
+.homepage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header {
+    text-align: center;
+    margin: 40px 0; /* Increased margin for better spacing */
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    color: #2c3e50; /* A dark blue for a professional look */
+    margin-bottom: 10px;
+    background-color: transparent;
+}
+
+.header p {
+    font-size: 1.2rem;
+    color: #646f70; /* A softer gray for the subtitle */
+}
+
+.search-container {
+    position: absolute;
+    width: 500px; /* Width of the search bar */
+    left: 50%; /* Move to the middle of the parent container */
+    transform: translateX(-50%); /* Shift it back by 50% of its own width */
+    top: 100px; /* Optional: Adjust vertical positioning */
+}
+
+input {
+    width: 100%;
+    padding: 15px 20px; /* Increased padding for a bigger input */
+    border: 2px solid #153792; /* Blue border */
+    border-radius: 30px; /* More rounded corners */
+    font-size: 18px; /* Larger font size for better readability */
+    outline: none; /* Remove default outline */
+    transition: border-color 0.3s, box-shadow 0.3s; /* Smooth transition for border color and shadow */
+}
+
+input:focus {
+    border-color:#153792; /* Darker blue on focus */
+    box-shadow: 0 1px 5px rgba(0, 91, 188, 0.5); /* Add shadow on focus */
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%; /* Position it below the search bar */
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 0 0 30px 30px; /* Rounded bottom corners */
+    z-index: 1;
+    max-height: 250px; /* Increased max height */
+    overflow-y: auto; /* Add scroll if needed */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Enhanced shadow for dropdown */
+    margin-top: 0px; /* Space between input and dropdown */
+    transition: all 0.3s; /* Smooth transition for dropdown */
+}
+
+.dropdown-item {
+    padding: 12px 20px; /* Increased padding for items */
+    font-size: 16px; /* Font size for dropdown items */
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effects */
+}
+
+.dropdown-item:hover {
+    background-color: #e0e0e0; /* Slightly darker on hover */
+    color: #007bff; /* Change text color on hover */
+}
+
+.no-results {
+    padding: 12px; /* Increased padding for no results */
+    text-align: center;
+    color: #777; /* Grey color for no results */
+    font-style: italic; /* Italicize no results */
+}

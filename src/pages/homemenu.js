@@ -44,7 +44,9 @@ function HomeMenu() {
       return false; // User is new
     }
   }
-
+  const handleButtonClick = () => {
+    navigate("/login");
+  };
   const signInWithGoogle = async () => {
     // Check if user info exists in Firestore
     const userInfoCollection = collection(db, "UserInfo");
@@ -96,12 +98,15 @@ function HomeMenu() {
           RatemyUni
         </Link>
       </div>
-      <button className="log-out-btn" onClick={logout} id="submitBtn">
-        Logout
-      </button>
-      <button className="sign-up-btn" onClick={signInWithGoogle}>
-        Sign up
-      </button>
+      {
+        <button className="log-out-btn" onClick={logout} id="submitBtn">
+          Logout
+        </button>
+      }
+
+      {/*<button className="sign-up-btn" onClick={signInWithGoogle}>
+        Leave a Review
+      </button>*/}
       <div>{userEmail ? <p>Welcome, {userEmail}</p> : <p></p>}</div>
     </div>
   );

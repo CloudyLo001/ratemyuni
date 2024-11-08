@@ -1,0 +1,52 @@
+html, body {
+  height: 100%; /* Ensure html and body take full height */
+  margin: 0; /* Remove default margin */
+}
+
+body {
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Stack children vertically */
+  min-height: 100vh; /* Set minimum height to 100% of the viewport height */
+}
+
+.review-details-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background-color: #f7f9fc; /* Light background for the container */
+  }
+  
+  .review-card {
+    max-width: 600px;
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px;
+  }
+  
+  .review-card h2 {
+    text-align: center;
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .review-item {
+    margin-bottom: 15px;
+  }
+  
+  .review-item h4 {
+    color: #555;
+    font-size: 18px;
+    margin: 0 0 5px;
+  }
+  
+  .review-item p {
+    font-size: 14px;
+    color: #444;
+    margin: 0;
+    line-height: 1.5;
+  }
+  

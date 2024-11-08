@@ -5,19 +5,37 @@ import "./login.css";
 import Menu from "./homemenu";
 import Footer from "./footer";
 import { Link } from "react-router-dom";
-import { auth, googleProvider } from "../config/firebase";
+import { auth, googleProvider, db } from "../config/firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 
-function Login() {
+function LoginButton() {
   const navigate = useNavigate();
 
   const signInWithGoogle = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+
+      // Check if user is a first-time user
+      const userRef = doc(db, "Users", result.user.uid);
+      const userDoc = await getDoc(userRef);
+
+      if (!userDoc.exists()) {
+        // If the user doesn't exist in Firestore, navigate to the userinfo page
+        await setDoc(userRef, {
+          email: result.user.email,
+          name: result.user.displayName,
+          // Other fields as required
+        });
+        navigate("/userinfo");
+      } else {
+        // If the user exists, navigate to the forum or main page
+        navigate("/questions");
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Error signing in with Google:", err);
     }
   };
 
@@ -100,16 +118,6 @@ function Login() {
     <div>
       <div>
         <Menu />
-        <div className="search-container">
-          <input
-            id="search"
-            className="search-box"
-            placeholder="Enter your University . . "
-            name=""
-          />
-          <div className="suggestions" id="suggestions"></div>
-        </div>
-
         <div className="container" id="container">
           <div className="form-header">
             <h2 id="formTitle">Login</h2>
@@ -146,4 +154,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default LoginButton;
