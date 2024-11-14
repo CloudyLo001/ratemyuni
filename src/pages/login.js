@@ -63,25 +63,6 @@ function LoginButton() {
 
     let isLogin = true;
 
-    toggleForm.addEventListener("click", () => {
-      isLogin = !isLogin;
-      if (isLogin) {
-        formTitle.innerText = "Login";
-        submitBtn.innerText = "Login";
-        toggleForm.innerText = "Don't have an account? Sign Up";
-        confirmPasswordGroup.style.display = "none";
-      } else {
-        formTitle.innerText = "Sign Up";
-        submitBtn.innerText = "Sign Up";
-        toggleForm.innerText = "Already have an account? Login";
-        confirmPasswordGroup.style.display = "block";
-      }
-      errorMessage.innerText = "";
-      emailInput.value = "";
-      passwordInput.value = "";
-      confirmPasswordInput.value = "";
-    });
-
     submitBtn.addEventListener("click", (e) => {
       e.preventDefault();
       const email = emailInput.value.trim();
@@ -116,12 +97,13 @@ function LoginButton() {
   }, []);
   return (
     <div>
-      <div>
+      <body>
         <Menu />
         <div className="container" id="container">
           <div className="form-header">
             <h2 id="formTitle">Login</h2>
           </div>
+          {/*}
           <div className="form-group">
             <label for="email">Email</label>
             <input type="email" id="email" required />
@@ -129,26 +111,22 @@ function LoginButton() {
           <div className="form-group" id="passwordGroup">
             <label for="password">Password</label>
             <input type="password" id="password" required />
-          </div>
+          </div>*/}
           <div className="confirm-form-group" id="confirmPasswordGroup">
             <label for="confirmPassword">Confirm Password</label>
             <input type="password" id="confirmPassword" />
           </div>
           <div className="error-message" id="errorMessage"></div>
           <div className="form-group">
-            <button id="submitBtn">Login</button>
-            <button onClick={signInWithGoogle} id="submitBtn">
+            <button onClick={signInWithGoogle} id="googleBtn">
               Sign in with Google
             </button>
-            <button onClick={logout} id="submitBtn">
+            {/*<button onClick={logout} id="submitBtn">
               Logout
-            </button>
-          </div>
-          <div className="toggle-link">
-            <a id="toggleForm">Don't have an account? Sign Up</a>
+            </button>*/}
           </div>
         </div>
-      </div>
+      </body>
       <Footer />
     </div>
   );

@@ -7,6 +7,8 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin: auto;
     margin-top: 100px;
+    margin-bottom: 100px;
+    align-items: center;
 }
 .form-header {
     text-align: center;
@@ -15,10 +17,12 @@
 }
 .form-header h2 {
     margin: 0;
+    font-size: 40px;
 }
 .form-group {
     margin-bottom: 15px;
     padding: 10px;
+    
 }
 
 .confirm-form-group {
@@ -39,6 +43,7 @@
 }
 .form-group button {
     width: 100%;
+    width: 400px;
     padding: 10px;
     font-size: 1em;
     font: bold;
@@ -46,7 +51,7 @@
     background-color: #7fe7d9;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
+    cursor: pointer;    
 }
 .form-group button:hover {
     background-color: #0056b3;
@@ -67,4 +72,8 @@
     color: red;
     text-align: center;
     margin-bottom: 10px;
+}
+
+#googleBtn {
+    margin-top: 10px;
 }

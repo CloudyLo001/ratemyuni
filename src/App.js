@@ -10,6 +10,7 @@ import LoginButton from "./pages/login";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import UserInfo from "./pages/userinfo";
 import ReviewDetails from "./pages/reviewdetails";
+import About from "./pages/about";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/Q3" element={<Q3 />} />
           <Route path="/login" element={<LoginButton />} />
           <Route path="/review/:id" element={<ReviewDetails />} />
+          <Route path="/about" element={<About />} />
           {/*<Route path="/login" element={<Login />} />*/}
         </Routes>
       </Router>

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./forum.css";
 import HomeMenu from "./homemenu";
 import Footer from "./footer";
-import { db, auth } from "../config/firebase";
-import { getDocs, collection, addDoc } from "firebase/firestore";
+import { db, googleProvider, auth } from "../config/firebase";
+import { signInWithPopup, signOut } from "firebase/auth";
+import { getDocs, collection, addDoc, setDoc, doc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
@@ -67,11 +68,35 @@ function IndexList() {
     fetchUserInfo();
   }, []);
 
-  const handleLeaveReview = () => {
+  const signInWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+
+      // Check if user is a first-time user
+      const userRef = doc(db, "Users", result.user.uid);
+      const userDoc = await getDocs(userRef);
+
+      if (!userDoc.exists()) {
+        // If the user doesn't exist in Firestore, navigate to the userinfo page
+        await setDoc(userRef, {
+          email: result.user.email,
+          name: result.user.displayName,
+          // Other fields as required
+        });
+        navigate("/userinfo");
+      } else {
+        // If the user exists, navigate to the forum or main page
+        navigate("/questions");
+      }
+    } catch (err) {
+      console.error("Error signing in with Google:", err);
+    }
+  };
+  const handleLeaveReview = async () => {
     if (auth.currentUser) {
       navigate("/questions"); // Redirect to review page if logged in
     } else {
-      navigate("/login"); // Redirect to login page if not logged in
+      await signInWithGoogle();
     }
   };
 

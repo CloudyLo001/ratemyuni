@@ -97,6 +97,7 @@ function UserInfo() {
     "Manufacturing Engineering",
     "Marketing",
     "Mathematics",
+    "Management Engineering",
     "Mechanical Engineering",
     "Mechatronics Engineering",
     "Media Studies",
