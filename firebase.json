@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": "rate-my-uni-1/build",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}

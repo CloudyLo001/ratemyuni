@@ -7,8 +7,8 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import HomeMenu from "../homemenu";
 import Footer from "../footer";
+import HomeMenu from "../homemenu";
 
 function Questions() {
   const [topics, setTopics] = useState([]);
@@ -191,6 +191,7 @@ function Questions() {
           </form>
         </div>
       </div>
+
       <Footer />
     </div>
   );

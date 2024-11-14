@@ -244,6 +244,7 @@ header {
   align-items: center; /* Center items vertically */
   padding: 10px;
 }
+
 .forum-title {
   text-align: left;
   margin-bottom: 20px;
@@ -255,6 +256,7 @@ header {
 }
 
 .leave-review-btn {
+  
   width: 160px;
   text-align: center;
   padding: 12px 10px; /* Add padding to the button */
@@ -267,7 +269,7 @@ header {
   margin-right: 50px;
   border-color: transparent;
   font-weight: 900;
-  
+  margin-right: 5vw;
 }
 
 .leave-review-btn:hover {
@@ -293,6 +295,7 @@ header {
   display: flex;
   justify-content: center;
   padding: 20px;
+  max-height: fit-content;
   
 }
 

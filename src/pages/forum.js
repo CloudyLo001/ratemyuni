@@ -157,103 +157,105 @@ function IndexList() {
   return (
     <div>
       <HomeMenu />
-      <div className="container-forum-filter">
-        <div className="forum-container">
-          <div className="forum-title-container">
-            <div className="forum-title">University of Waterloo Reviews</div>
-            <button className="leave-review-btn" onClick={handleLeaveReview}>
-              Leave a Review
-            </button>
-          </div>
-          <section className="reviews">
-            <div className="modal-content">
-              {displayedReviews.map((review) => {
-                const userInfo = userinfoList.find(
-                  (user) => user.userId === review.userId
-                );
-
-                return (
-                  <Link
-                    to={`/review/${review.id}`}
-                    key={review.id}
-                    className="review-link"
-                  >
-                    <div className="review">
-                      <div className="prompt">{review.prompt}</div>
-                      <div className="answer">{review.answer}</div>
-                      {userInfo ? (
-                        <div className="user-info">
-                          - {userInfo.Program} student from Class of{" "}
-                          {userInfo.ExpectedGraduationYear}
-                        </div>
-                      ) : (
-                        <div>- student information not available</div>
-                      )}
-                      <div className="timestamp">
-                        {formatReviewDate(review.timestamp?.toDate())}
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-            {visibleCount < filteredReviews.length && ( // Show button only if there are more reviews to show
-              <button className="more-reviews-btn" onClick={loadMoreReviews}>
-                More Reviews
+      <body>
+        <div className="container-forum-filter">
+          <div className="forum-container">
+            <div className="forum-title-container">
+              <div className="forum-title">University of Waterloo</div>
+              <button className="leave-review-btn" onClick={handleLeaveReview}>
+                Leave a Review
               </button>
-            )}
-          </section>
-        </div>
+            </div>
+            <section className="reviews">
+              <div className="modal-content">
+                {displayedReviews.map((review) => {
+                  const userInfo = userinfoList.find(
+                    (user) => user.userId === review.userId
+                  );
 
-        {/*Filter*/}
-        <div className="filter-container">
-          <h3>Filter</h3>
-          <label>
-            Topic:
-            <select
-              value={topicFilter}
-              onChange={(e) => setTopicFilter(e.target.value)}
-            >
-              <option value="">All Topics</option>
-              {topicOptions.map((topic) => (
-                <option key={topic} value={topic}>
-                  {topic}
-                </option>
-              ))}
-            </select>
-          </label>
-          {/* Program Filter */}
-          <label>
-            Program:
-            <select
-              value={programFilter}
-              onChange={(e) => setProgramFilter(e.target.value)}
-            >
-              <option value="">All Programs</option>
-              {programOptions.map((program) => (
-                <option key={program} value={program}>
-                  {program}
-                </option>
-              ))}
-            </select>
-          </label>
-          {/* Level of Education Filter */}
-          <label>
-            Level of Education:
-            <select
-              value={levelFilter}
-              onChange={(e) => setLevelFilter(e.target.value)}
-            >
-              <option value="">All Levels</option>
-              {levelOptions.map((level) => (
-                <option key={level} value={level}>
-                  {level}
-                </option>
-              ))}
-            </select>
-          </label>
+                  return (
+                    <Link
+                      to={`/review/${review.id}`}
+                      key={review.id}
+                      className="review-link"
+                    >
+                      <div className="review">
+                        <div className="prompt">{review.prompt}</div>
+                        <div className="answer">{review.answer}</div>
+                        {userInfo ? (
+                          <div className="user-info">
+                            - {userInfo.Program} student from Class of{" "}
+                            {userInfo.ExpectedGraduationYear}
+                          </div>
+                        ) : (
+                          <div>- student information not available</div>
+                        )}
+                        <div className="timestamp">
+                          {formatReviewDate(review.timestamp?.toDate())}
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+              {visibleCount < filteredReviews.length && ( // Show button only if there are more reviews to show
+                <button className="more-reviews-btn" onClick={loadMoreReviews}>
+                  More Reviews
+                </button>
+              )}
+            </section>
+          </div>
+
+          {/*Filter*/}
+          <div className="filter-container">
+            <h3>Filter</h3>
+            <label>
+              Topic:
+              <select
+                value={topicFilter}
+                onChange={(e) => setTopicFilter(e.target.value)}
+              >
+                <option value="">All Topics</option>
+                {topicOptions.map((topic) => (
+                  <option key={topic} value={topic}>
+                    {topic}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {/* Program Filter */}
+            <label>
+              Program:
+              <select
+                value={programFilter}
+                onChange={(e) => setProgramFilter(e.target.value)}
+              >
+                <option value="">All Programs</option>
+                {programOptions.map((program) => (
+                  <option key={program} value={program}>
+                    {program}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {/* Level of Education Filter */}
+            <label>
+              Level of Education:
+              <select
+                value={levelFilter}
+                onChange={(e) => setLevelFilter(e.target.value)}
+              >
+                <option value="">All Levels</option>
+                {levelOptions.map((level) => (
+                  <option key={level} value={level}>
+                    {level}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
         </div>
-      </div>
+      </body>
       <Footer />
     </div>
   );

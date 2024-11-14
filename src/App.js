@@ -11,6 +11,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import UserInfo from "./pages/userinfo";
 import ReviewDetails from "./pages/reviewdetails";
 import About from "./pages/about";
+import PrivacyPolicy from "./pages/privacypolicy";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/login" element={<LoginButton />} />
           <Route path="/review/:id" element={<ReviewDetails />} />
           <Route path="/about" element={<About />} />
+          <Route path="/privacypolicy" element={<PrivacyPolicy />} />
           {/*<Route path="/login" element={<Login />} />*/}
         </Routes>
       </Router>

@@ -1,0 +1,64 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    height: 100%;
+    font-family: Arial, sans-serif;
+    color: #333;
+    min-height: 100vh;
+  }
+  
+  /* Container */
+  .about-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f4f9;
+  }
+  
+  /* Header */
+  header h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #2c3e50;
+  }
+  
+  /* Main Content */
+  main {
+    width: 100%;
+    max-width: 800px;
+    text-align: left;
+  }
+  
+  .about-content h2 {
+    font-size: 1.8em;
+    margin-top: 20px;
+    color: #2c3e50;
+  }
+  
+  .about-content p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-top: 10px;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    header h1 {
+      font-size: 2em;
+    }
+  
+    .about-content h2 {
+      font-size: 1.6em;
+    }
+  }
+  
+  h2 {
+    color: #2c3e50;
+  }

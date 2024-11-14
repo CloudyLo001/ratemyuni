@@ -18,7 +18,7 @@ import {
   where,
   getFirestore,
 } from "firebase/firestore";
-import UserInfo from "./userinfo";
+import { signInWithGoogle } from "./forum";
 
 function HomeMenu() {
   const navigate = useNavigate();
@@ -84,8 +84,10 @@ function HomeMenu() {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setUserEmail(user.email);
+        setUser(user); // Store the user object if logged in
       } else {
         setUserEmail(null);
+        setUser(null); // Reset user state if logged out
       }
     });
     return () => unsubscribe();
@@ -98,11 +100,16 @@ function HomeMenu() {
           RatemyUni
         </Link>
       </div>
-      {
-        <button className="log-out-btn" onClick={logout} id="submitBtn">
-          Logout
+      {/* Conditional rendering for login/logout button */}
+      {user ? (
+        <button className="log-btn" onClick={logout} id="submitBtn">
+          Log Out
         </button>
-      }
+      ) : (
+        <button className="log-btn" onClick={signInWithGoogle}>
+          Log In
+        </button>
+      )}
 
       {/*<button className="sign-up-btn" onClick={signInWithGoogle}>
         Leave a Review

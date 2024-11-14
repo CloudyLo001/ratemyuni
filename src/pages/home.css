@@ -31,9 +31,7 @@ body {
 .search-container {
     position: absolute;
     width: 500px; /* Width of the search bar */
-    left: 50%; /* Move to the middle of the parent container */
-    transform: translateX(-50%); /* Shift it back by 50% of its own width */
-    top: 100px; /* Optional: Adjust vertical positioning */
+    top: -200px; /* Optional: Adjust vertical positioning */
 }
 
 input {

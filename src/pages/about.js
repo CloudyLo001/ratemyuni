@@ -11,9 +11,8 @@ function About() {
     <body>
       <HomeMenu />
       <div className="about-container">
-        <header>
-          <h1>About University Reviews</h1>
-        </header>
+        <h2>About University Reviews</h2>
+
         <main>
           <section className="about-content">
             <h2>Our Mission</h2>
