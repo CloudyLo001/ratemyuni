@@ -94,8 +94,18 @@ function IndexList() {
   };
   const handleLeaveReview = async () => {
     if (auth.currentUser) {
-      navigate("/questions"); // Redirect to review page if logged in
+      // Check if it's the user's first time logging in
+      const user = auth.currentUser;
+      const isNewUser =
+        user.metadata.creationTime === user.metadata.lastSignInTime;
+
+      if (isNewUser) {
+        navigate("/userinfo"); // Navigate to userinfo page if new user
+      } else {
+        navigate("/questions"); // Navigate to review page if returning user
+      }
     } else {
+      // Sign in with Google if not authenticated
       await signInWithGoogle();
     }
   };
