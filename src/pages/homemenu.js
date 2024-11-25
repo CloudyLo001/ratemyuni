@@ -59,12 +59,8 @@ function HomeMenu() {
 
       if (check) {
         navigate("/forum");
-        console.log("hi");
-        console.log(user);
       } else {
         navigate("/userinfo");
-        console.log("bni");
-        console.log(user);
       }
     } catch (err) {
       console.error(err);

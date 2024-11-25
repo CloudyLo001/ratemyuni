@@ -19,6 +19,7 @@ function Questions() {
   const [hoveredTopic, setHoveredTopic] = useState(null);
   const [hoveredQuestions, setHoveredQuestions] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -95,6 +96,10 @@ function Questions() {
       return;
     }
 
+    if (isSubmitting) return; // Prevent multiple submissions
+
+    setIsSubmitting(true);
+
     try {
       if (!auth.currentUser) {
         throw new Error("User not authenticated");
@@ -116,6 +121,8 @@ function Questions() {
     } catch (error) {
       console.error("Error adding document: ", error);
       alert("An error occurred while submitting the information.");
+    } finally {
+      setIsSubmitting(false); // Unlock submission
     }
   };
 

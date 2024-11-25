@@ -54,6 +54,7 @@ function UserInfo() {
     "Cognitive Science",
     "Communications",
     "Computer Engineering",
+    "Computing and Financial Management",
     "Computer Science",
     "Construction Management",
     "Creative Writing",
@@ -159,8 +160,7 @@ function UserInfo() {
         UserEmail: auth.currentUser.email,
         userId: auth.currentUser.uid, // Assuming the user is authenticated
       });
-      console.log("Document written with ID: ", docRef.id);
-      console.log(formData);
+
       // Clear the form after successful submission
       setFormData({
         University: "",
@@ -172,7 +172,7 @@ function UserInfo() {
       });
 
       // Redirect to a different page
-      navigate("/forum");
+      navigate("/questions");
     } catch (error) {
       console.error("Error adding document: ", error);
       // You can show an error message to the user here
@@ -272,7 +272,7 @@ function UserInfo() {
               )}
             </select>
           </div>
-          <div className="form-group">
+          {/*<div className="form-group">
             <label htmlFor="Rating">How was your experience?</label>
             <select
               id="Rating"
@@ -288,7 +288,7 @@ function UserInfo() {
               <option value="4">4</option>
               <option value="5">5</option>
             </select>
-          </div>
+          </div>*/}
           <button type="submit" className="submit-btn">
             {isLoading ? "Submitting..." : "Submit"}
           </button>

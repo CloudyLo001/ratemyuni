@@ -198,7 +198,9 @@ function IndexList() {
                             {userInfo.ExpectedGraduationYear}
                           </div>
                         ) : (
-                          <div>- student information not available</div>
+                          <div className="user-info">
+                            - student information not available
+                          </div>
                         )}
                         <div className="timestamp">
                           {formatReviewDate(review.timestamp?.toDate())}
