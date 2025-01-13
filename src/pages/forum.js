@@ -4,7 +4,15 @@ import HomeMenu from "./homemenu";
 import Footer from "./footer";
 import { db, googleProvider, auth } from "../config/firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
-import { getDocs, collection, addDoc, setDoc, doc } from "firebase/firestore";
+import {
+  getDocs,
+  collection,
+  addDoc,
+  setDoc,
+  doc,
+  query,
+  where,
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
@@ -13,6 +21,8 @@ function IndexList() {
   const [userinfoList, setUserInfoList] = useState([]);
   const [LevelOfEducationFilter, setLevelOfEducationFilter] = useState("");
   const [visibleCount, setVisibleCount] = useState(5); // State to track visible reviews
+  const [currentPage, setCurrentPage] = useState(1); // Current page state
+  const [reviewsPerPage] = useState(5);
   const navigate = useNavigate();
 
   //Filters
@@ -94,19 +104,57 @@ function IndexList() {
   };
   const handleLeaveReview = async () => {
     if (auth.currentUser) {
-      // Check if it's the user's first time logging in
-      const user = auth.currentUser;
-      const isNewUser =
-        user.metadata.creationTime === user.metadata.lastSignInTime;
+      // Get the current user's email
+      const userEmail = auth.currentUser.email;
 
-      if (isNewUser) {
-        navigate("/userinfo"); // Navigate to userinfo page if new user
-      } else {
-        navigate("/questions"); // Navigate to review page if returning user
+      // Query Firestore to check if the user exists by email
+      const userDocRef = collection(db, "UserInfo");
+      const q = query(userDocRef, where("UserEmail", "==", userEmail));
+
+      try {
+        // Fetch documents matching the query
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          // User doesn't exist in the database, treat as new user
+          console.log("New user detected");
+          navigate("/userinfo"); // Navigate to userinfo page to gather additional info
+        } else {
+          // User exists in the database, treat as returning user
+          console.log("Returning user detected");
+          navigate("/questions"); // Navigate to the questions page for returning users
+        }
+      } catch (err) {
+        console.error("Error checking user in Firestore:", err);
       }
     } else {
-      // Sign in with Google if not authenticated
+      // If no user is logged in, initiate Google Sign-In
       await signInWithGoogle();
+
+      // After sign-in, rerun the user check
+      if (auth.currentUser) {
+        const userEmail = auth.currentUser.email;
+
+        // Query Firestore to check if the user exists by email
+        const userDocRef = collection(db, "UserInfo");
+        const q = query(userDocRef, where("UserEmail", "==", userEmail));
+
+        try {
+          const querySnapshot = await getDocs(q);
+
+          if (querySnapshot.empty) {
+            // New user, navigate to userinfo page
+            console.log("New user detected");
+            navigate("/userinfo");
+          } else {
+            // Returning user, navigate to questions page
+            console.log("Returning user detected");
+            navigate("/questions");
+          }
+        } catch (err) {
+          console.error("Error checking user in Firestore:", err);
+        }
+      }
     }
   };
 
@@ -129,12 +177,58 @@ function IndexList() {
         : a.timestamp?.toMillis() - b.timestamp?.toMillis()
     );
 
+  // Pagination logic
+  const indexOfLastReview = currentPage * reviewsPerPage;
+  const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
+  const displayedReviews = filteredReviews.slice(
+    indexOfFirstReview,
+    indexOfLastReview
+  );
+
+  const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
+
+  const goToPage = (page) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    const delta = 2; // Number of pages to show around the current page
+
+    for (let i = 1; i <= totalPages; i++) {
+      if (
+        i === 1 ||
+        i === totalPages ||
+        (i >= currentPage - delta && i <= currentPage + delta)
+      ) {
+        pageNumbers.push(
+          <button
+            key={i}
+            onClick={() => goToPage(i)}
+            className={i === currentPage ? "active-page" : ""}
+          >
+            {i}
+          </button>
+        );
+      } else if (pageNumbers[pageNumbers.length - 1] !== "...") {
+        pageNumbers.push(<span key={i}>...</span>);
+      }
+    }
+
+    return pageNumbers;
+  };
+
+  {
+    /*
   // Get only the visible reviews
   const displayedReviews = filteredReviews.slice(0, visibleCount);
 
   const loadMoreReviews = () => {
     setVisibleCount((prevCount) => prevCount + 3); // Load 3 more reviews
-  };
+  };*/
+  }
 
   const formatReviewDate = (postedDate) => {
     const now = new Date();
@@ -210,11 +304,26 @@ function IndexList() {
                   );
                 })}
               </div>
-              {visibleCount < filteredReviews.length && ( // Show button only if there are more reviews to show
+              {/*{visibleCount < filteredReviews.length && ( // Show button only if there are more reviews to show
                 <button className="more-reviews-btn" onClick={loadMoreReviews}>
                   More Reviews
                 </button>
-              )}
+              )}*/}
+              <div className="pagination-controls">
+                <button
+                  onClick={() => goToPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  &lt;
+                </button>
+                {renderPageNumbers()}
+                <button
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  &gt;
+                </button>
+              </div>
             </section>
           </div>
 
