@@ -47,7 +47,6 @@ function Q1() {
   // Handler for the submit button
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", setAnswer);
     // You can add logic here to handle the answer, e.g., send to a backend
     try {
       if (!auth.currentUser) {

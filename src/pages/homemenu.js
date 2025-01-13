@@ -37,10 +37,8 @@ function HomeMenu() {
     const querySnapshot = await getDocs(q);
     //const docSnapshot = await getDoc(userDoc);
     if (!querySnapshot.empty) {
-      console.log("User exists:");
       return true; // User has been logged before
     } else {
-      console.log("User does not exist");
       return false; // User is new
     }
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./forum.css";
 import HomeMenu from "./homemenu";
 import Footer from "./footer";
@@ -24,6 +24,7 @@ function IndexList() {
   const [currentPage, setCurrentPage] = useState(1); // Current page state
   const [reviewsPerPage] = useState(5);
   const navigate = useNavigate();
+  const firstReviewRef = useRef(null);
 
   //Filters
   const [topicFilter, setTopicFilter] = useState("");
@@ -117,11 +118,11 @@ function IndexList() {
 
         if (querySnapshot.empty) {
           // User doesn't exist in the database, treat as new user
-          console.log("New user detected");
+
           navigate("/userinfo"); // Navigate to userinfo page to gather additional info
         } else {
           // User exists in the database, treat as returning user
-          console.log("Returning user detected");
+
           navigate("/questions"); // Navigate to the questions page for returning users
         }
       } catch (err) {
@@ -144,11 +145,11 @@ function IndexList() {
 
           if (querySnapshot.empty) {
             // New user, navigate to userinfo page
-            console.log("New user detected");
+
             navigate("/userinfo");
           } else {
             // Returning user, navigate to questions page
-            console.log("Returning user detected");
+
             navigate("/questions");
           }
         } catch (err) {
@@ -190,6 +191,16 @@ function IndexList() {
   const goToPage = (page) => {
     if (page > 0 && page <= totalPages) {
       setCurrentPage(page);
+
+      // Scroll to the first review after page change
+      if (firstReviewRef.current) {
+        const topPosition =
+          firstReviewRef.current.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({
+          top: topPosition - 50, // Adjust the scroll position higher by 50px
+          behavior: "smooth",
+        });
+      }
     }
   };
 
@@ -272,7 +283,7 @@ function IndexList() {
             </div>
             <section className="reviews">
               <div className="modal-content">
-                {displayedReviews.map((review) => {
+                {displayedReviews.map((review, index) => {
                   const userInfo = userinfoList.find(
                     (user) => user.userId === review.userId
                   );
@@ -283,7 +294,10 @@ function IndexList() {
                       key={review.id}
                       className="review-link"
                     >
-                      <div className="review">
+                      <div
+                        ref={index === 0 ? firstReviewRef : null}
+                        className="review"
+                      >
                         <div className="prompt">{review.prompt}</div>
                         <div className="answer">{review.answer}</div>
                         {userInfo ? (
