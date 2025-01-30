@@ -45,7 +45,7 @@ function HomeMenu() {
   const handleButtonClick = () => {
     navigate("/login");
   };
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (redirectPath = "/") => {
     // Check if user info exists in Firestore
     const userInfoCollection = collection(db, "UserInfo");
 
@@ -56,12 +56,12 @@ function HomeMenu() {
       const check = await checkUserExists(user);
 
       if (check) {
-        navigate("/forum");
+        navigate(redirectPath); // Navigate back to where the user clicked sign-in
       } else {
         navigate("/userinfo");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error signing in with Google:", err);
     }
   };
 

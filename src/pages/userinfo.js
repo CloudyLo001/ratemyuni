@@ -12,6 +12,7 @@ import {
   doc,
   getDoc,
   updateDoc,
+  setDoc,
 } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -28,6 +29,7 @@ function UserInfo() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [suggestions, setSuggestions] = useState([]);
+  const [universities, setUniversities] = useState([]);
 
   const programs = [
     "Accounting",
@@ -135,11 +137,6 @@ function UserInfo() {
     "Zoology",
   ];
 
-  const universities = [
-    "University of Waterloo",
-    //Add more in the future
-  ];
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -148,20 +145,23 @@ function UserInfo() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, redirectPath = "/") => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Here you would typically send the data to your backend or Firebase
-    e.preventDefault();
+
     try {
-      // Add the document to Firestore
-      const docRef = await addDoc(userInfoCollection, {
+      const userEmail = auth.currentUser.email;
+
+      if (!userEmail) {
+        throw new Error("User is not authenticated.");
+      }
+
+      const userDocRef = doc(db, "UserInfo", userEmail);
+      await setDoc(userDocRef, {
         ...formData,
-        UserEmail: auth.currentUser.email,
-        userId: auth.currentUser.uid, // Assuming the user is authenticated
+        UserEmail: userEmail,
+        userId: auth.currentUser.uid,
       });
 
-      // Clear the form after successful submission
       setFormData({
         University: "",
         Program: "",
@@ -171,11 +171,10 @@ function UserInfo() {
         UserEmail: "",
       });
 
-      // Redirect to a different page
-      navigate("/questions");
+      // Navigate back to the previous page
+      navigate(-1); // This goes back to the previous page in the history stack
     } catch (error) {
-      console.error("Error adding document: ", error);
-      // You can show an error message to the user here
+      console.error("Error saving document: ", error);
       alert("An error occurred while submitting the information.");
     }
   };
@@ -194,7 +193,23 @@ function UserInfo() {
 
     fetchUserInfo();
   }, []);
+  useEffect(() => {
+    const fetchUniversities = async () => {
+      try {
+        const universitiesCollection = collection(db, "Universities");
+        const universitiesSnapshot = await getDocs(universitiesCollection);
+        // Map through documents and get the 'University' field for each doc
+        const universitiesList = universitiesSnapshot.docs.map(
+          (doc) => doc.data().University
+        );
+        setUniversities(universitiesList);
+      } catch (error) {
+        console.error("Error fetching universities: ", error);
+      }
+    };
 
+    fetchUniversities();
+  }, []);
   return (
     <div>
       <HomeMenu />

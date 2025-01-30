@@ -6,6 +6,7 @@ import { db, googleProvider, auth } from "../config/firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
 import {
   getDocs,
+  getDoc,
   collection,
   addDoc,
   setDoc,
@@ -13,10 +14,10 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 
-function IndexList() {
+function ForumPage() {
   const [reviewList, setReviewList] = useState([]);
   const [userinfoList, setUserInfoList] = useState([]);
   const [LevelOfEducationFilter, setLevelOfEducationFilter] = useState("");
@@ -25,6 +26,7 @@ function IndexList() {
   const [reviewsPerPage] = useState(5);
   const navigate = useNavigate();
   const firstReviewRef = useRef(null);
+  const [universityData, setUniversityData] = useState({});
 
   //Filters
   const [topicFilter, setTopicFilter] = useState("");
@@ -32,52 +34,112 @@ function IndexList() {
   const [levelFilter, setLevelFilter] = useState("");
   const [dateOrder, setDateOrder] = useState("desc");
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
+
   // States for filter options
   const [topicOptions, setTopicOptions] = useState([]);
   const [programOptions, setProgramOptions] = useState([]);
   const [levelOptions, setLevelOptions] = useState([]);
 
+  const { id } = useParams(); // Get university ID from URL
   useEffect(() => {
     // Fetch reviews and unique topics
-    const fetchReviews = async () => {
-      const reviewsCollectionRef = collection(db, "Questions and Answers");
-      const data = await getDocs(reviewsCollectionRef);
-      const reviews = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-      setReviewList(reviews);
+    const fetchUniversityData = async () => {
+      if (!id) {
+        console.error("No university ID provided!");
+        return;
+      }
 
-      // Extract unique topics for topic filter options
-      const topics = new Set();
-      reviews.forEach((review) => {
-        if (review.topic) topics.add(review.topic);
-      });
-      setTopicOptions([...topics]);
+      const uniRef = doc(db, "Universities", decodeURIComponent(id));
+
+      try {
+        const uniSnap = await getDoc(uniRef);
+
+        if (uniSnap.exists()) {
+          console.log("Firestore document data:", uniSnap.data());
+          setUniversityData(uniSnap.data());
+        } else {
+          console.error("No document found in Firestore for ID:", id);
+        }
+      } catch (err) {
+        console.error("Error fetching university data:", err);
+      }
+    };
+
+    const fetchReviews = async () => {
+      if (!id) return; // Ensure `id` is available (university ID for this page)
+
+      const reviewsCollectionRef = collection(db, "Questions and Answers");
+
+      // Start with a query for the university
+      let q = query(
+        reviewsCollectionRef,
+        where("University", "==", decodeURIComponent(id))
+      );
+
+      // Add additional filters for Level of Education and Program if provided
+      if (levelFilter) {
+        q = query(q, where("LevelOfEducation", "==", levelFilter)); // Filter by LevelOfEducation
+      }
+
+      if (programFilter) {
+        q = query(q, where("Program", "==", programFilter)); // Filter by Program
+      }
+
+      // Filter by topic if provided
+      if (topicFilter) {
+        q = query(q, where("topic", "==", topicFilter)); // Filter by topic
+      }
+
+      try {
+        const data = await getDocs(q); // Execute the query
+        const reviews = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        setReviewList(reviews);
+
+        // Extract unique topics for topic filter options
+        const topics = new Set();
+        const programs = new Set();
+        const levels = new Set();
+
+        reviews.forEach((review) => {
+          if (review.topic) topics.add(review.topic); // Add topic to topics set
+          if (review.Program) programs.add(review.Program); // Add program to programs set
+          if (review.LevelOfEducation) levels.add(review.LevelOfEducation); // Add level to levels set
+        });
+
+        setTopicOptions([...topics]);
+        setProgramOptions([...programs].sort());
+        setLevelOptions([...levels].sort());
+      } catch (err) {
+        console.error("Error fetching reviews: ", err);
+      }
     };
 
     // Fetch user information for program and level options
     const fetchUserInfo = async () => {
       const userInfoCollectionRef = collection(db, "UserInfo");
       const data = await getDocs(userInfoCollectionRef);
-      const userInfoList = data.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setUserInfoList(userInfoList);
+      const userInfos = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      setUserInfoList(userInfos);
 
       // Extract unique programs and levels for filter options
       const programs = new Set();
       const levels = new Set();
-      userInfoList.forEach((user) => {
-        if (user.Program) programs.add(user.Program);
-        if (user.LevelOfEducation) levels.add(user.LevelOfEducation);
+
+      userInfos.forEach((user) => {
+        if (user.Program) programs.add(user.Program); // Add unique programs
+        if (user.LevelOfEducation) levels.add(user.LevelOfEducation); // Add unique levels
       });
 
       setProgramOptions([...programs].sort());
-      setLevelOptions([...levels]);
+      setLevelOptions([...levels].sort());
     };
-
+    console.log("useEffect triggered with ID:", id);
+    fetchUniversityData();
     fetchReviews();
     fetchUserInfo();
-  }, []);
+  }, [id, levelFilter, programFilter, topicFilter]);
 
   const signInWithGoogle = async () => {
     try {
@@ -97,7 +159,7 @@ function IndexList() {
         navigate("/userinfo");
       } else {
         // If the user exists, navigate to the forum or main page
-        navigate("/questions");
+        navigate(`/questions/${encodeURIComponent(universityData.University)}`);
       }
     } catch (err) {
       console.error("Error signing in with Google:", err);
@@ -123,7 +185,9 @@ function IndexList() {
         } else {
           // User exists in the database, treat as returning user
 
-          navigate("/questions"); // Navigate to the questions page for returning users
+          navigate(
+            `/questions/${encodeURIComponent(universityData.University)}`
+          ); // Navigate to the questions page for returning users
         }
       } catch (err) {
         console.error("Error checking user in Firestore:", err);
@@ -150,7 +214,9 @@ function IndexList() {
           } else {
             // Returning user, navigate to questions page
 
-            navigate("/questions");
+            navigate(
+              `/questions/${encodeURIComponent(universityData.University)}`
+            );
           }
         } catch (err) {
           console.error("Error checking user in Firestore:", err);
@@ -165,6 +231,17 @@ function IndexList() {
         (user) => user.userId === review.userId
       );
 
+      const matchesSearch =
+        !searchFilter ||
+        searchFilter
+          .split(" ")
+          .every(
+            (word) =>
+              review.prompt?.toLowerCase().includes(word) ||
+              review.answer?.toLowerCase().includes(word)
+          );
+
+      if (!matchesSearch) return false; // Skip if it doesn't match search
       if (topicFilter && review.topic !== topicFilter) return false;
       if (programFilter && userInfo?.Program !== programFilter) return false;
       if (levelFilter && userInfo?.LevelOfEducation !== levelFilter)
@@ -202,6 +279,13 @@ function IndexList() {
         });
       }
     }
+  };
+
+  // Handle form submission to apply the search query
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setSearchFilter(searchQuery.trim().toLowerCase());
+    setCurrentPage(1); // Reset to first page on search
   };
 
   const renderPageNumbers = () => {
@@ -273,10 +357,16 @@ function IndexList() {
     <div>
       <HomeMenu />
       <body>
+        <div className="uni-info">
+          <div className="uni-info-container">
+            <div className="forum-title">{universityData.University}</div>
+            <div className="uni-description">{universityData.Description}</div>
+          </div>
+          {/*<div className="uni-rating">3.9 stars</div>*/}
+        </div>
         <div className="container-forum-filter">
           <div className="forum-container">
             <div className="forum-title-container">
-              <div className="forum-title">University of Waterloo</div>
               <button className="leave-review-btn" onClick={handleLeaveReview}>
                 Leave a Review
               </button>
@@ -343,7 +433,7 @@ function IndexList() {
 
           {/*Filter*/}
           <div className="filter-container">
-            <h3>Filter</h3>
+            <h3>Sort by</h3>
             <label>
               Topic:
               <select
@@ -388,6 +478,17 @@ function IndexList() {
                 ))}
               </select>
             </label>
+            <label>
+              <form onSubmit={handleSearchSubmit}>
+                <textarea
+                  type="text"
+                  placeholder="Search reviews..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="filter-search-bar"
+                />
+              </form>
+            </label>
           </div>
         </div>
       </body>
@@ -396,4 +497,4 @@ function IndexList() {
   );
 }
 
-export default IndexList;
+export default ForumPage;

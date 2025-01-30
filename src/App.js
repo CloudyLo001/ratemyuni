@@ -1,6 +1,6 @@
 import logo from "./logo.svg";
 import "./App.css";
-import IndexList from "./pages/forum";
+import ForumPage from "./pages/forum";
 import HomePage from "./pages/home";
 import Q1 from "./pages/question/q1";
 import Q2 from "./pages/question/q2.js";
@@ -19,9 +19,9 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/forum" element={<IndexList />} />
+          <Route path="/forum/:id" element={<ForumPage />} />
           <Route path="/userinfo" element={<UserInfo />} />
-          <Route path="/questions" element={<Questions />} />
+          <Route path="/questions/:universityId" element={<Questions />} />
           <Route path="/Q1" element={<Q1 />} />
           <Route path="/Q2" element={<Q2 />} />
           <Route path="/Q3" element={<Q3 />} />

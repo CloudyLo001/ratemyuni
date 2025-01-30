@@ -4,22 +4,35 @@ import "./home.css";
 import HomeMenu from "./homemenu";
 import Footer from "./footer";
 import { useNavigate, Link } from "react-router-dom";
+import { db } from "../config/firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 function HomePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const navigate = useNavigate();
-  const universities = [
-    "University of Waterloo",
-    /*"University of Toronto",
-    "University of British Columbia",*/
-  ];
+  const [universities, setUniversities] = useState([]);
 
-  const universityRoutes = {
+  useEffect(() => {
+    const fetchUniversities = async () => {
+      const querySnapshot = await getDocs(collection(db, "Universities")); // Ensure collection name matches Firestore
+      const universityList = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setUniversities(universityList);
+    };
+
+    fetchUniversities();
+  }, []);
+
+  {
+    /*const universityRoutes = {
     "University of Waterloo": "/forum",
     "University of Toronto": "/university-of-toronto",
     "University of British Columbia": "/university-of-british-columbia",
-  };
+  };*/
+  }
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value.toLowerCase());
@@ -31,22 +44,20 @@ function HomePage() {
   };
 
   const filterUniversities = universities.filter((university) =>
-    university.toLowerCase().includes(searchTerm)
+    university.University?.toLowerCase().includes(searchTerm)
   );
 
   const handleSelect = (university) => {
-    setSearchTerm(university); // Set the input to the selected university
+    setSearchTerm(university.University); // Set the input to the selected university
     setDropdownVisible(false); // Close the dropdown
-    const route = universityRoutes[university];
-    if (route) {
-      navigate(route); // Programmatically navigate to the university page
-    }
+    navigate(`/forum/${university.id}`);
   };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       const selectedUniversity = universities.find(
-        (university) => university.toLowerCase() === searchTerm.toLowerCase()
+        (university) =>
+          university.University.toLowerCase() === searchTerm.toLowerCase()
       );
       if (selectedUniversity) {
         handleSelect(selectedUniversity);
@@ -79,7 +90,7 @@ function HomePage() {
                   onClick={() => handleSelect(university)}
                   className="dropdown-item"
                 >
-                  {university}
+                  {university.University}
                 </li>
               ))
             ) : (

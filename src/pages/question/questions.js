@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { db, auth } from "../../config/firebase"; // Ensure you have initialized Firebase
+import { db, auth } from "../../config/firebase";
 import {
   collection,
   getDocs,
   addDoc,
   serverTimestamp,
 } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../footer";
 import HomeMenu from "../homemenu";
 
@@ -16,21 +16,20 @@ function Questions() {
   const [selectedTopic, setSelectedTopic] = useState("");
   const [selectedQuestion, setSelectedQuestion] = useState("");
   const [answerText, setAnswerText] = useState("");
-  const [hoveredTopic, setHoveredTopic] = useState(null);
-  const [hoveredQuestions, setHoveredQuestions] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { universityId } = useParams();
+  const universityName = decodeURIComponent(universityId); // Use universityId directly
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch topics and questions from Firebase
+    // Fetch topics from Firestore
     const fetchTopics = async () => {
       try {
         const topicsCollection = collection(db, "Topics");
         const topicSnapshot = await getDocs(topicsCollection);
         const loadedTopics = topicSnapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data(), // Fetch all fields in the document, including "Prompt"
+          ...doc.data(),
         }));
         setTopics(loadedTopics);
       } catch (error) {
@@ -41,65 +40,31 @@ function Questions() {
     fetchTopics();
   }, []);
 
-  const handleMouseEnter = () => {
-    setIsOpen(true); // Open the dropdown on hover
-  };
-
-  const handleMouseLeave = () => {
-    setIsOpen(false); // Close the dropdown when not hovering
-    setHoveredTopic(null); // Optional: reset hovered topic
-  };
-
-  const handleTopicHover = (topic) => {
-    setHoveredTopic(topic); // Set the hovered topic'
-    setSelectedTopic(topic.Topic || []);
-  };
-  const handleTopicLeave = () => {
-    setHoveredTopic(null); // Clear the hovered topic
-  };
-
-  // Handle topic selection
-  const handleTopicClick = (topic) => {
-    if (selectedTopic === topic.Topic) {
-      // Close the submenu if already selected
-      setSelectedTopic("");
-      setQuestions([]);
-    } else {
-      // Set selected topic and fetch questions
-      setSelectedTopic(topic.Topic);
-      setQuestions(topic.Prompt || []); // Ensure Prompt is an array of questions
-    }
-    setSelectedQuestion(""); // Reset question selection
-  };
-
-  // Handle topic selection
   const handleTopicChange = (e) => {
     const selected = topics.find((topic) => topic.Topic === e.target.value);
     if (selected) {
       setSelectedTopic(selected.Topic);
-      setQuestions(selected.Prompt); // Ensure this exists
-      setSelectedQuestion(""); // Clear previously selected question
+      setQuestions(selected.Prompt || []);
+      setSelectedQuestion("");
     } else {
-      console.error("Selected topic not found");
+      setSelectedTopic("");
+      setQuestions([]);
     }
   };
 
-  const handleQuestionClick = (question) => {
-    setSelectedQuestion(question); // Set the selected question
+  const handleQuestionChange = (e) => {
+    setSelectedQuestion(e.target.value);
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedQuestion) {
       alert("Please select a question before submitting.");
       return;
     }
-
-    if (isSubmitting) return; // Prevent multiple submissions
+    if (isSubmitting) return;
 
     setIsSubmitting(true);
-
     try {
       if (!auth.currentUser) {
         throw new Error("User not authenticated");
@@ -111,94 +76,86 @@ function Questions() {
         userId: auth.currentUser.uid,
         timestamp: serverTimestamp(),
         topic: selectedTopic,
+        University: universityName,
       });
-      setAnswerText(""); // Clear the input after submission
+      setAnswerText("");
+      setSelectedTopic("");
+      setSelectedQuestion("");
       setQuestions([]);
-      setSelectedTopic(""); // Reset topic selection
-      setSelectedQuestion(""); // Reset question selection
-      setQuestions([]); // Clear questions
-      navigate("/forum");
+      navigate(`/forum/${universityId}`);
     } catch (error) {
       console.error("Error adding document: ", error);
       alert("An error occurred while submitting the information.");
     } finally {
-      setIsSubmitting(false); // Unlock submission
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div>
       <HomeMenu />
-
       <div className="qa-form">
-        {/* Dropdown for selecting topic */}
-        <div className="dropdown-container">
-          <div
-            className="dropdown"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <button
-              id="topicDropdown"
+        <h2>Leave a Review for {universityName}</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="dropdown-container">
+            <label htmlFor="topic">Select Topic:</label>
+            <select
+              id="topic"
               value={selectedTopic}
-              className="option-button"
-            >
-              {selectedTopic || "Select prompt . . ."}
-            </button>
-            <div className="topic">
-              {isOpen && (
-                <div className="topic-box">
-                  <ul value="" disabled>
-                    {topics.map((topic) => (
-                      <li
-                        className="menu"
-                        key={topic.id}
-                        value={topic.Topic}
-                        onMouseEnter={() => handleTopicHover(topic)}
-                        onMouseLeave={handleTopicLeave}
-                      >
-                        {topic.Topic}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {hoveredTopic && (
-                <div
-                  className="questions-container"
-                  onMouseEnter={() => handleTopicHover(hoveredTopic)} // Keep open on hover
-                  onMouseLeave={handleTopicLeave} // Close when leaving
-                >
-                  <ul>
-                    {Array.isArray(hoveredTopic.Prompt) &&
-                      hoveredTopic.Prompt.map((question, index) => (
-                        <li
-                          key={index}
-                          onClick={() => handleQuestionClick(question)}
-                        >
-                          {question}
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-          <div>Question: {selectedQuestion}</div>
-
-          <form onSubmit={handleSubmit}>
-            <textarea
-              rows="4"
-              value={answerText}
-              onChange={(e) => setAnswerText(e.target.value)}
+              onChange={handleTopicChange}
               required
-              style={{ resize: "none", overflow: "hidden" }}
-            />
-            <button className="submit">Submit</button>
-          </form>
-        </div>
-      </div>
+            >
+              <option value="" disabled>
+                -- Select a Topic --
+              </option>
+              {topics.map((topic) => (
+                <option key={topic.id} value={topic.Topic}>
+                  {topic.Topic}
+                </option>
+              ))}
+            </select>
 
+            {selectedTopic && (
+              <>
+                <label htmlFor="question">Select Prompt:</label>
+                <select
+                  id="question"
+                  value={selectedQuestion}
+                  onChange={handleQuestionChange}
+                  required
+                >
+                  <option value="" disabled>
+                    -- Select a Prompt --
+                  </option>
+                  {questions.map((question, index) => (
+                    <option key={index} value={question}>
+                      {question}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
+          </div>
+
+          {selectedQuestion && (
+            <>
+              <label htmlFor="answer">Your Answer:</label>
+              <textarea
+                id="answer"
+                rows="4"
+                value={answerText}
+                onChange={(e) => setAnswerText(e.target.value)}
+                required
+                style={{ resize: "none", width: "100%" }}
+              />
+            </>
+          )}
+
+          <button type="submit" disabled={!selectedQuestion || !answerText}>
+            Submit
+          </button>
+        </form>
+      </div>
       <Footer />
     </div>
   );
